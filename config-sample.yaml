@@ -1,0 +1,16 @@
+# Sample Configuration for immerse-eu/maganamed2fhir
+# rename this file to config.yaml and enter/extend content below
+
+# Local directories
+localPaths:
+  basePath: C:/temp/maganamed
+
+# Names of Maganamed special files
+filenames:
+  participants: participants.csv
+
+# eCRFs with tab name in Excel codebook and CSV filename
+eCRFs:
+  1:
+    tabname:
+    filename:
