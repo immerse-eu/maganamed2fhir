@@ -15,13 +15,13 @@ def parseCodebook(config):
         # Extract tab- & filename of current eCRF
         ecrfTabname = config["eCRFs"][ecrfId]["tabname"]
         ecrfFilename = config["eCRFs"][ecrfId]["filename"]
-
-        print("id=", ecrfId, "tabname=", ecrfTabname, "filename=", ecrfFilename)
+        ecrfAcronym  = config["eCRFs"][ecrfId]["acronym"] or "NO_ACRONYM"
 
         # Create entry for current eCRF in YAML dictionary
         dictCodebook["eCRFs"][ecrfId] = {
-            "ecrfTabname": config["eCRFs"][ecrfId]["tabname"],
-            "ecrfFilename": config["eCRFs"][ecrfId]["filename"]
+            "ecrfTabname": ecrfTabname,
+            "ecrfFilename": ecrfFilename,
+            "ecrfAcronym": ecrfAcronym
         }
 
         # Extract codebook of current eCRF from Excel file
@@ -69,6 +69,8 @@ def parseCodebook(config):
                     "itemPrompt": itemPrompt
                 }
                 dictCodebook["eCRFs"][ecrfId][itemId]["answers"] = {}
+
+#                print(itemId, "\t", rowContent["codebook"], "\t", rowContent["answer type"], "\t", itemPrompt)
 
             # Store code of current row for comparison with next one
             prvItemCode = rowContent["codebook"]
