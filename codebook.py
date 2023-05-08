@@ -21,14 +21,15 @@ def parseCodebook(config):
         dictCodebook["eCRFs"][ecrfId] = {
             "ecrfTabname": ecrfTabname,
             "ecrfFilename": ecrfFilename,
-            "ecrfAcronym": ecrfAcronym
+            "ecrfAcronym": ecrfAcronym,
+            "items": {}
         }
 
         # Extract codebook of current eCRF from Excel file
         ecrfCodebook = pd.read_excel(config["localPaths"]["basePath"] + "/export/codebook.xlsx", sheet_name=ecrfTabname, header=0, usecols="A:E")
 
-        # Remove first 6 empty rows from codebook
-        ecrfCodebook.drop(ecrfCodebook.index[0:6], inplace=True)
+        # Remove first 7 empty rows from codebook
+        ecrfCodebook.drop(ecrfCodebook.index[0:7], inplace=True)
 
         # Iterate over rows of current eCRF codebook tab
         itemId = 0
@@ -44,8 +45,8 @@ def parseCodebook(config):
                 if missingPromptFlag == 1:
                     commonPrefix = p.commonprefix(answerTexts)
                     if len(commonPrefix) > 0:
-                        dictCodebook["eCRFs"][ecrfId][itemId]["itemPrompt"] = commonPrefix
-                        dictCodebook["eCRFs"][ecrfId][itemId]["itemPromptSubstituted"] = 1
+                        dictCodebook["eCRFs"][ecrfId]["items"][itemId]["itemPrompt"] = commonPrefix
+                        dictCodebook["eCRFs"][ecrfId]["items"][itemId]["itemPromptSubstituted"] = 1
 
                 # Initialize new item
                 itemId += 1
@@ -62,13 +63,13 @@ def parseCodebook(config):
                     missingPromptFlag = 0
 
                 # Create entry for current question in YAML dictionary
-                dictCodebook["eCRFs"][ecrfId][itemId] = {
+                dictCodebook["eCRFs"][ecrfId]["items"][itemId] = {
                     "itemId": itemId,
                     "itemCode": rowContent["codebook"],
                     "itemDataType": rowContent["answer type"],
                     "itemPrompt": itemPrompt
                 }
-                dictCodebook["eCRFs"][ecrfId][itemId]["answers"] = {}
+                dictCodebook["eCRFs"][ecrfId]["items"][itemId]["answers"] = {}
 
 #                print(itemId, "\t", rowContent["codebook"], "\t", rowContent["answer type"], "\t", itemPrompt)
 
@@ -79,7 +80,7 @@ def parseCodebook(config):
             if not pd.isnull(rowContent["answer"]):
                 answerId += 1
                 answerTexts.append(rowContent["answer"])
-                dictCodebook["eCRFs"][ecrfId][itemId]["answers"][answerId] = {
+                dictCodebook["eCRFs"][ecrfId]["items"][itemId]["answers"][answerId] = {
                     "answerCode": rowContent["encoding"],
                     "answerText": rowContent["answer"]
                 }
