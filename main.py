@@ -27,7 +27,10 @@ dictCodebook = codebook.parseCodebook(config)
 with open(config['localPaths']['basePath'] + "/codebook.yaml", 'w') as outfile:
     yaml.dump(dictCodebook, outfile, default_flow_style=False)
 
-dictParticipants = participants.readParticipants(config)
+dfParticipants = participants.readParticipants(config)
+
+# Export merged participant dataframe to CSV file
+dfParticipants.to_csv(config["localPaths"]["basePath"] + "/participants.csv", sep = ";", index = False)
 
 # Iterate over eCRFs
 # for ecrfId in dictCodebook["eCRFs"]:
