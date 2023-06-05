@@ -10,9 +10,6 @@ def readParticipants(config):
     # Load "Kind of Participant" eCRF from exported CSV file
     dfKindOfParticipant = pd.read_csv(config["localPaths"]["basePath"] + "/export/Kind-of-participant.csv", sep=";")
 
-    # Load "Smartphone_Doc ESM Random" eCRF from exported CSV file
-    dfSmartphone = pd.read_csv(config["localPaths"]["basePath"] + "/export/Smartphone_Doc-ESM-Randomization.csv", sep=";")
-
     # Select & rename relevant columns of KindOfParticipant dataframe
     dictRemap = {"participant_identifier": "participant_identifier",
                  "PARTICIPANT_01": "participant_kind",
@@ -45,6 +42,9 @@ def readParticipants(config):
                  8.0: "Kosice"}
     dfKindOfParticipant.replace({"participant_center": dictRemap}, inplace=True)
 
+    # Load "Smartphone_Doc ESM Random" eCRF from exported CSV file
+    dfSmartphone = pd.read_csv(config["localPaths"]["basePath"] + "/export/Smartphone_Doc-ESM-Randomization.csv", sep=";")
+
     # Select & rename relevant columns of Smartphone dataframe
     dictRemap = {"participant_identifier": "participant_identifier",
                  "Doc_02": "movisensxs_id"}
@@ -53,11 +53,47 @@ def readParticipants(config):
     # Convert data type of movisensxs_id column to integer
     dfSmartphone["movisensxs_id"] = dfSmartphone["movisensxs_id"].astype("Int64")
 
+    # Load "Demographics (Patients)" eCRF from exported CSV file
+    dfDemographicsPatients = pd.read_csv(config["localPaths"]["basePath"] + "/export/Demographics-(Patients).csv", sep=";")
+
+    # Select & rename relevant columns of Demographics Patient dataframe
+    dictRemap = {"participant_identifier": "participant_identifier",
+                 "MRC_gender": "participant_patient_gender"}
+    dfDemographicsPatients = dfDemographicsPatients.rename(columns=dictRemap)[dictRemap.values()]
+
+    # Map values of Demographics Patient gender column to human-interpretable codes
+    dictRemap = {0.0: "MALE",
+                 1.0: "FEMALE",
+                 2.0: "NON-BINARY",
+                 3.0: "OTHER"}
+    dfDemographicsPatients.replace({"participant_patient_gender": dictRemap}, inplace=True)
+
+    # Load "Demographics (Clinicians)" eCRF from exported CSV file
+    dfDemographicsClinicians = pd.read_csv(config["localPaths"]["basePath"] + "/export/Demographics-(Clinicians).csv", sep=";")
+
+    # Select & rename relevant columns of Demographics Clinicians dataframe
+    dictRemap = {"participant_identifier": "participant_identifier",
+                 "Gender": "participant_clinician_gender"}
+    dfDemographicsClinicians = dfDemographicsClinicians.rename(columns=dictRemap)[dictRemap.values()]
+
+    # Map values of Demographics Clinician gender column to human-interpretable codes
+    dictRemap = {0.0: "MALE",
+                 1.0: "FEMALE",
+                 2.0: "NON-BINARY",
+                 3.0: "OTHER"}
+    dfDemographicsClinicians.replace({"participant_clinician_gender": dictRemap}, inplace=True)
+
     # Merge participant kind data to base participant identities using left outer join
     dfParticipants = pd.merge(dfParticipants, dfKindOfParticipant, how="left", on=["participant_identifier"])
 
     # Merge Smartphone dataframe using left outer join
     dfParticipants = pd.merge(dfParticipants, dfSmartphone, how="left", on=["participant_identifier"])
+
+    # Merge Demographics Patients dataframe using left outer join
+    dfParticipants = pd.merge(dfParticipants, dfDemographicsPatients, how="left", on=["participant_identifier"])
+
+    # Merge Demographics Clinicians dataframe using left outer join
+    dfParticipants = pd.merge(dfParticipants, dfDemographicsClinicians, how="left", on=["participant_identifier"])
 
     # Return participant dictionary
     return dfParticipants

@@ -38,3 +38,10 @@ dfParticipants.to_csv(config["localPaths"]["basePath"] + "/participants.csv", se
 #     ecrfFilename = dictCodebook["eCRFs"][ecrfId]["ecrfFilename"]
 #     if not os.path.isfile(config["localPaths"]["basePath"] + "/export/" + ecrfFilename):
 #         print(ecrfFilename)
+
+# Print dump of main eCRF/item configurations for debugging
+print("ecrfId;ecrfAcronym;ecrfFilename;itemId;itemCode;itemPrompt")
+for ecrfId in dictCodebook["eCRFs"]:
+    for itemId in dictCodebook["eCRFs"][ecrfId]["items"]:
+        print(str(ecrfId) + ";" + dictCodebook["eCRFs"][ecrfId]["ecrfAcronym"] + ";" + dictCodebook["eCRFs"][ecrfId]["ecrfFilename"] + ";" + str(itemId) + ";" + dictCodebook["eCRFs"][ecrfId]["items"][itemId]["itemCode"] + ";"  + dictCodebook["eCRFs"][ecrfId]["items"][itemId]["itemPrompt"])
+
