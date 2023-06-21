@@ -1,4 +1,5 @@
 # Required Libraries
+import numpy as np
 import pandas as pd
 
 # Function to read participant list into a dataframe
@@ -83,6 +84,20 @@ def readParticipants(config):
                  3.0: "OTHER"}
     dfDemographicsClinicians.replace({"participant_clinician_gender": dictRemap}, inplace=True)
 
+    # Load "Demographics (Clinicians)" eCRF from exported CSV file
+    dfScreeningChecklist = pd.read_csv(config["localPaths"]["basePath"] + "/export/Screening-Checklist.csv", sep=";")
+
+    # Select & rename relevant columns of Screening Checklist dataframe
+    dictRemap = {"participant_identifier": "participant_identifier",
+                 "decision": "included_in_study"}
+    dfScreeningChecklist = dfScreeningChecklist.rename(columns=dictRemap)[dictRemap.values()]
+
+    # Map values of Demographics Clinician gender column to human-interpretable codes
+    dictRemap = {0.0: "not_included",
+                 1.0: "included",
+                 np.NAN: "undefined"}
+    dfScreeningChecklist.replace({"included_in_study": dictRemap}, inplace=True)
+
     # Merge participant kind data to base participant identities using left outer join
     dfParticipants = pd.merge(dfParticipants, dfKindOfParticipant, how="left", on=["participant_identifier"])
 
@@ -94,6 +109,9 @@ def readParticipants(config):
 
     # Merge Demographics Clinicians dataframe using left outer join
     dfParticipants = pd.merge(dfParticipants, dfDemographicsClinicians, how="left", on=["participant_identifier"])
+
+    # Merge Screening Checklist dataframe using left outer join
+    dfParticipants = pd.merge(dfParticipants, dfScreeningChecklist, how="left", on=["participant_identifier"])
 
     # Return participant dictionary
     return dfParticipants
