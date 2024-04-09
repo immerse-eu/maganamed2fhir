@@ -52,7 +52,10 @@ def readParticipants(config):
     dfSmartphone = dfSmartphone.rename(columns=dictRemap)[dictRemap.values()]
 
     # Convert data type of movisensxs_id column to integer
-    dfSmartphone["movisensxs_id"] = dfSmartphone["movisensxs_id"].astype("Int64")
+    try:
+        dfSmartphone["movisensxs_id"] = dfSmartphone["movisensxs_id"].astype("Int64")
+    except:
+        dfSmartphone["movisensxs_id"] = ""
 
     # Load "Demographics (Patients)" eCRF from exported CSV file
     dfDemographicsPatients = pd.read_csv(config["localPaths"]["basePath"] + "/export/Demographics-(Patients).csv", sep=";")

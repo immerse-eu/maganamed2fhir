@@ -27,21 +27,8 @@ dictCodebook = codebook.parseCodebook(config)
 with open(config['localPaths']['basePath'] + "/codebook.yaml", 'w') as outfile:
     yaml.dump(dictCodebook, outfile, default_flow_style=False)
 
+# Generate extended participant list with site, gender and movisensXS identifiers
 dfParticipants = participants.readParticipants(config)
 
 # Export merged participant dataframe to CSV file
 dfParticipants.to_csv(config["localPaths"]["basePath"] + "/participants.csv", sep = ";", index = False)
-
-# Iterate over eCRFs
-# for ecrfId in dictCodebook["eCRFs"]:
-#     print(ecrfId)
-#     ecrfFilename = dictCodebook["eCRFs"][ecrfId]["ecrfFilename"]
-#     if not os.path.isfile(config["localPaths"]["basePath"] + "/export/" + ecrfFilename):
-#         print(ecrfFilename)
-
-# Print dump of main eCRF/item configurations for debugging
-print("ecrfId;ecrfAcronym;ecrfFilename;itemId;itemCode;itemPrompt")
-for ecrfId in dictCodebook["eCRFs"]:
-    for itemId in dictCodebook["eCRFs"][ecrfId]["items"]:
-        print(str(ecrfId) + ";" + dictCodebook["eCRFs"][ecrfId]["ecrfAcronym"] + ";" + dictCodebook["eCRFs"][ecrfId]["ecrfFilename"] + ";" + str(itemId) + ";" + dictCodebook["eCRFs"][ecrfId]["items"][itemId]["itemCode"] + ";"  + dictCodebook["eCRFs"][ecrfId]["items"][itemId]["itemPrompt"])
-
