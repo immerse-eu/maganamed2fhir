@@ -1,3 +1,3 @@
 # maganamed2fhir
 
-Python scripts to extract eCRF data captured through MaganaMed in the IMMERSE Consortium
+Python scripts to extract eCRF codebook and documented data captured through MaganaMed in the IMMERSE Consortium
